@@ -15,13 +15,10 @@ public class CustomLog4jJsonModule extends Log4jJsonModule {
         super();
     }
 
-
     @Override
     public void setupModule(final SetupContext context) {
-        // Calling super is a MUST!
         super.setupModule(context);
 
-        //OVERRIDE LogEvent.class mixin with our custom one.
         context.setMixInAnnotations(LogEvent.class, CustomLogEventMixIn.class);
     }
 }

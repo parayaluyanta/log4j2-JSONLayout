@@ -1,6 +1,9 @@
 package org.apache.logging.log4j.core.layout;
 
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,9 +24,13 @@ import org.testng.annotations.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
-public class CustomJSONLayoutJacksonIT {
+public class CustomJSONLayoutJacksonSpecs {
+
+    final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    final DateFormat isoDateFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
+
     public static final String LOCATION_INFO = "LocationInfo";
-    private static Logger logger = LogManager.getLogger(CustomJSONLayoutJacksonIT.class);
+    private static Logger logger = LogManager.getLogger(CustomJSONLayoutJacksonSpecs.class);
 
 
     @Test(enabled = false, dataProvider = "dp")
@@ -52,6 +59,7 @@ public class CustomJSONLayoutJacksonIT {
     @Test
     public void hasTimestampAndVersionInLogMessages() throws Exception {
         Message simpleMessage = new SimpleMessage("Test Message");
+        long millis = System.currentTimeMillis();
 
         Map<String,String>  mdc =     new HashMap<String,String>();
         mdc.put("A","B");//Already some threadcontext
@@ -67,7 +75,7 @@ public class CustomJSONLayoutJacksonIT {
                 null,
                 Thread.currentThread().getName(),
                 null,
-                System.currentTimeMillis()
+                millis
                 );
 
 
@@ -84,14 +92,14 @@ public class CustomJSONLayoutJacksonIT {
         String actualJSON = layout.toSerializable(event);
         System.out.println(actualJSON);
 
-        String expectedBasicSimpleTestJSON = "{\"version\":\"1\"," +
-                // "\"timestamp\":\"2015-07-28T11:31:18.492-07:00\",\"timeMillis\":1438108278492," +
+        String expectedBasicSimpleTestJSON = "{\"timestamp\":" + "\"" + isoDateFormat.format(new Date(millis)) +"\"," +
+                "\"timeMillis\":" + millis + "," +
                 "\"thread\":\""+ Thread.currentThread().getName() +"\"," +
                 "\"level\":\"DEBUG\"," +
-                "\"loggerName\":\"org.apache.logging.log4j.core.layout.CustomJSONLayoutJacksonIT\"," +
+                "\"loggerName\":\"org.apache.logging.log4j.core.layout.CustomJSONLayoutJacksonSpecs\"," +
                 "\"message\":\"Test Message\"," +
                 "\"endOfBatch\":false," +
-                "\"loggerFqcn\":\"org.apache.logging.log4j.core.layout.CustomJSONLayoutJacksonIT\","+
+                "\"loggerFqcn\":\"org.apache.logging.log4j.core.layout.CustomJSONLayoutJacksonSpecs\","+
                 "\"contextMap\":[{\"key\":\"Foo\",\"value\":\"Bar\"},{\"key\":\"A\",\"value\":\"B\"}]}";
 
         assertThat(actualJSON, sameJSONAs(expectedBasicSimpleTestJSON)
@@ -103,6 +111,8 @@ public class CustomJSONLayoutJacksonIT {
     @Test
     public void hasLogMessageAsItIs() throws Exception {
         Message simpleMessage = new SimpleMessage("key1=value1,key2=value2");
+
+        long millis = System.currentTimeMillis();
 
         Map<String,String>  mdc =     new HashMap<String,String>();
         mdc.put("A","B");//Already some threadcontext
@@ -121,7 +131,6 @@ public class CustomJSONLayoutJacksonIT {
                 System.currentTimeMillis()
         );
 
-
         AbstractJacksonLayout layout = CustomJSONLayout.createLayout(
                 true, //location
                 true, //properties
@@ -134,17 +143,17 @@ public class CustomJSONLayoutJacksonIT {
 
         String actualJSON = layout.toSerializable(event);
         System.out.println(actualJSON);
-        assertThat(actualJSON, sameJSONAs("{\"version\":\"1\"," +
-                // "\"timestamp\":\"2015-07-28T11:31:18.492-07:00\",\"timeMillis\":1438108278492," +
+        assertThat(actualJSON, sameJSONAs("{\"timestamp\":" + "\"" + isoDateFormat.format(new Date(millis)) +"\"," +
+                "\"timeMillis\":" + millis + "," +
                 "\"thread\":\""+ Thread.currentThread().getName() +"\"," +
                 "\"level\":\"DEBUG\"," +
-                "\"loggerName\":\"org.apache.logging.log4j.core.layout.CustomJSONLayoutJacksonIT\"," +
+                "\"loggerName\":\"org.apache.logging.log4j.core.layout.CustomJSONLayoutJacksonSpecs\"," +
                 "\"message\":\"key1=value1,key2=value2\"," +
                 "\"endOfBatch\":false," +
-                "\"loggerFqcn\":\"org.apache.logging.log4j.core.layout.CustomJSONLayoutJacksonIT\","+
+                "\"loggerFqcn\":\"org.apache.logging.log4j.core.layout.CustomJSONLayoutJacksonSpecs\","+
                 "\"contextMap\":[{\"key\":\"Foo\",\"value\":\"Bar\"},{\"key\":\"A\",\"value\":\"B\"}]}")
                 .allowingExtraUnexpectedFields()
                 .allowingAnyArrayOrdering());
     }
-
 }
+

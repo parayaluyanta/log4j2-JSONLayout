@@ -12,17 +12,18 @@ import java.util.Set;
 
 /**
  * Cribbed from log4j core JacksonFactory, this merely introduces CustomLog4jJsonObjectMapper
- *
+ * <p>
  * Created by jeremyfranklin-ross on 7/27/15.
  */
-abstract  class CustomJacksonFactory extends JacksonFactory {
-        static class JSON extends JacksonFactory.JSON {
-            @Override
-            protected ObjectMapper newObjectMapper() {
-                return new CustomLog4jJsonObjectMapper();
-            }
+abstract class CustomJacksonFactory extends JacksonFactory {
 
+    static class JSON extends JacksonFactory.JSON {
+        @Override
+        protected ObjectMapper newObjectMapper() {
+            return new CustomLog4jJsonObjectMapper();
         }
+
+    }
 
     ObjectWriter newWriter(final boolean locationInfo, final boolean properties, final boolean compact) {
         final SimpleFilterProvider filters = new SimpleFilterProvider();
@@ -34,7 +35,8 @@ abstract  class CustomJacksonFactory extends JacksonFactory {
             except.add(this.getPropertNameForContextMap());
         }
         filters.addFilter(Log4jLogEvent.class.getName(), SimpleBeanPropertyFilter.serializeAllExcept(except));
-        final ObjectWriter writer = this.newObjectMapper().writer(compact ? this.newCompactPrinter() : this.newPrettyPrinter());
+        final ObjectWriter writer = this.newObjectMapper().writer(compact ? this.newCompactPrinter() :
+                this.newPrettyPrinter());
         return writer.with(filters);
     }
 

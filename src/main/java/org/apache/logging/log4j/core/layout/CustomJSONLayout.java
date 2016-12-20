@@ -34,7 +34,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Copy Pasta version of JsonLayout that uses a different JSON writer which adds
- * required logstash "@version" and "@timestamp" fields to the default serialized form.
+ * timestamp fields to the default serialized form.
  *
  * @see org.apache.logging.log4j.core.layout.JsonLayout
  */
@@ -181,7 +181,5 @@ public class CustomJSONLayout extends AbstractJacksonLayout {
             return Strings.EMPTY;
         }
     }
-
-
 
 }

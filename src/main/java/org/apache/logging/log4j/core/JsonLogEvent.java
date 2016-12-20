@@ -22,8 +22,8 @@ import org.apache.logging.log4j.message.Message;
  */
 public class JsonLogEvent implements LogEvent{
 
-    static final String ISO8601_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
-    static final DateFormat iso8601DateFormat = new SimpleDateFormat(ISO8601_TIMESTAMP_FORMAT);
+    static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    static final DateFormat isoDateFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
 
     private LogEvent wrappedLogEvent;
 
@@ -31,12 +31,8 @@ public class JsonLogEvent implements LogEvent{
         this.wrappedLogEvent = wrappedLogEvent;
     }
 
-    public String getVersion() {
-        return "1";//LOGSTASH VERSION
-    }
-
     public String getTimestamp() {
-        return iso8601DateFormat.format(new Date(this.getTimeMillis()));
+        return isoDateFormat.format(new Date(this.getTimeMillis()));
     }
 
     @Override
